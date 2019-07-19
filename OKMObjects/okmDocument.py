@@ -7,13 +7,13 @@ class OkmDocument(object):
 
     def __init__(self, username, password, url):
         self.auth = HTTPBasicAuth(username, password)
-        self.url = url.__add__('/services/rest/document')
+        self.url = url.__add__('/services/rest')
 
 # We are able to upload a document to our system taking the path where it is locally.
     # The information returned includes the id of the document in the manager.
 
     def uploadDocument(self, srcPath, dstName):
-        request = self.url.__add__('/createSimple')
+        request = self.url.__add__('/document/createSimple')
         r = requests.post(request,
                           files=(
                               ('content', open(srcPath, 'rb')),
@@ -26,17 +26,28 @@ class OkmDocument(object):
 
     def getDocument(self, srcPath, dstName):
         payload = {'docId': srcPath}
-        request = self.url.__add__('/getContent')
+        request = self.url.__add__('/document/getContent')
         r = requests.get(request, params=payload, auth=self.auth)
         with open(''.__add__(dstName), 'wb') as file:
             file.write(r.content)
+        assert r.status_code == 200
+
+# We get Children
+    def getChildren(self, srcPath, type):
+        payload = {'fldId': srcPath}
+        request = self.url.__add__('/'+str(type)+'/getChildren')
+        r = requests.get(request, params=payload,
+                         auth=self.auth,
+                         headers={'Accept': 'application/json'})
+        with open(''.__add__('children.json'), 'w') as file:
+            file.write(r.text)
         assert r.status_code == 200
 
 # We get a JSON with the version history of a concrete document, the JSON is saved in a file.
 
     def getDocumentVersionHistory(self, srcPath):
         payload = {'docId': srcPath}
-        request = self.url.__add__('/getVersionHistory')
+        request = self.url.__add__('/document/getVersionHistory')
         r = requests.get(request, params=payload,
                          auth=self.auth,
                          headers={'Accept': 'application/json'})
@@ -48,7 +59,7 @@ class OkmDocument(object):
 
     def getDocumentProperties(self, srcPath):
         payload = {'docId': srcPath}
-        request = self.url.__add__('/getProperties')
+        request = self.url.__add__('/document/getProperties')
         r = requests.get(request, params=payload,
                          auth=self.auth,
                          headers={'Accept': 'application/json'})
@@ -60,7 +71,7 @@ class OkmDocument(object):
 
     def copyDocument(self, srcPath, dstPath):
         payload = {'docId': srcPath, 'dstId': dstPath}
-        request = self.url.__add__('/copy')
+        request = self.url.__add__('/document/copy')
         r = requests.put(request, params=payload,
                          auth=self.auth)
         assert r.status_code == 204
@@ -69,7 +80,7 @@ class OkmDocument(object):
 
     def deleteDocument(self, srcPath):
         payload = {'docId': srcPath}
-        request = self.url.__add__('/delete')
+        request = self.url.__add__('/document/delete')
         r = requests.delete(request, params=payload, auth=self.auth)
         assert r.status_code == 204
 
