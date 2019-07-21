@@ -21,7 +21,7 @@ class OkmDocument(object):
                               ('content', open(srcPath, 'rb')),
                               ('docPath', '/okm:root/'.__add__(dstName))),
                           auth=self.auth,
-                          headers={'Accept': 'application/json'})
+                          headers={'Accept': 'application/json; charset=utf-8'})
         print(r.status_code)
 
 # We obtain the document selected in the source path and we save it with the destination name.
@@ -40,7 +40,7 @@ class OkmDocument(object):
         request = self.url.__add__('/'+str(type)+'/getChildren')
         r = requests.get(request, params=payload,
                          auth=self.auth,
-                         headers={'Accept': 'application/json'})
+                         headers={'Accept': 'application/json; charset=utf-8'})
         with open(''.__add__('children.json'), 'w') as file:
             file.write(r.text)
         assert r.status_code == 200
@@ -52,7 +52,7 @@ class OkmDocument(object):
         request = self.url.__add__('/document/getVersionHistory')
         r = requests.get(request, params=payload,
                          auth=self.auth,
-                         headers={'Accept': 'application/json'})
+                         headers={'Accept': 'application/json; charset=utf-8'})
         with open(''.__add__('versionHistory.json'), 'w') as file:
             file.write(r.text)
         assert r.status_code == 200
@@ -64,7 +64,7 @@ class OkmDocument(object):
         request = self.url.__add__('/document/getProperties')
         r = requests.get(request, params=payload,
                          auth=self.auth,
-                         headers={'Accept': 'application/json'})
+                         headers={'Accept': 'application/json; charset=utf-8'})
         with open(''.__add__('properties.json'), 'w') as file:
             file.write(r.text)
         assert r.status_code == 200
